@@ -1,5 +1,5 @@
 {
-  "author": "benji7425 <benji7425@pm.me> (https://github.com/benji7425/)",
+  "author": "Benjamin Higgins <mail@brhiggins.com>",
   "bugs": {
     "url": "https://github.com/benji7425/discord-rss-feed/issues"
   },
@@ -38,5 +38,5 @@
     "start": "node ./dist/index.js --name rss-fetcher",
     "test": "node --stack-trace-limit=1 ./test-runner.js"
   },
-  "version": "4.1.1"
+  "version": "4.1.2"
 }
