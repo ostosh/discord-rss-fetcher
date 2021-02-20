@@ -1,7 +1,7 @@
 {
   "author": "Benjamin Higgins <mail@brhiggins.com>",
   "bugs": {
-    "url": "https://github.com/benji7425/discord-rss-feed/issues"
+    "url": "https://github.com/bhigginsuk/discord-rss-feed/issues"
   },
   "dependencies": {
     "@types/html-to-text": "^1.4.31",
@@ -9,7 +9,7 @@
     "@types/shortid": "0.0.29",
     "@types/xml2js": "^0.4.4",
     "alsatian": "^3.0.0",
-    "disharmony": "git+https://github.com/bhigginsuk/disharmony.git#v2.0.7",
+    "disharmony": "git+https://github.com/bhigginsuk/disharmony.git#v2.0.8",
     "get-urls": "^9.1.0",
     "html-to-text": "^5.1.1",
     "rss-parser": "^3.7.0",
@@ -22,13 +22,13 @@
   "devDependencies": {
     "tslint": "^5.16.0"
   },
-  "homepage": "https://github.com/benji7425/discord-rss-feed#readme",
+  "homepage": "https://github.com/bhigginsuk/discord-rss-feed#readme",
   "license": "MIT",
   "main": "dist/index.js",
   "name": "discord-rss-feed",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benji7425/discord-rss-feed.git"
+    "url": "git+https://github.com/bhigginsuk/discord-rss-feed.git"
   },
   "scripts": {
     "build": "./node_modules/.bin/tsc --project tsconfig.prod.json",
@@ -38,5 +38,5 @@
     "start": "node ./dist/index.js --name rss-fetcher",
     "test": "node --stack-trace-limit=1 ./test-runner.js"
   },
-  "version": "4.1.2"
+  "version": "4.1.3"
 }

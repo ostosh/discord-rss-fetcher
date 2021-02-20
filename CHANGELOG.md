@@ -1,4 +1,11 @@
 # Changelog
+## v4.1.3
+### Updated
+- Package version for disharmony
+
+### Removed
+- Dead links in help command
+
 ## v4.1.2
 ### Updated
 - Package version for disharmony; include fix for nedb issue
