@@ -3,6 +3,8 @@ import Feed from "../models/feed"
 import Guild from "../models/guild"
 import RssFetcher, { getRssFetcher } from "../service/rss-reader/abstract/rss-fetcher"
 import ArticlePoster from "./article-poster"
+import { delay } from "./../lib/common"
+import { RssConfig } from "./../types/types"
 
 export default class FeedMonitor
 {
@@ -26,6 +28,13 @@ export default class FeedMonitor
 
                 if (didPostNewArticle)
                     await guild.save()
+
+                // Sleep before next iteration
+                let rssFeedTimeoutMs = 30000;
+                if (this.client.config && (this.client.config as RssConfig).rssFeedTimeoutMs) {
+                    rssFeedTimeoutMs = (this.client.config as RssConfig).rssFeedTimeoutMs
+                }
+                await delay(rssFeedTimeoutMs)
             }
 
         // Reaching this code means the above while loop exited, which means the bot disconnected
@@ -55,14 +64,19 @@ export default class FeedMonitor
             if (articles.length === 0)
                 return false
 
-            const article = articles[0], link = article.link
+            // Feed the articles from the earliest to the latest
+            for (var i = articles.length - 1 ; i >= 0; i --) {
 
-            if (!link || feed.isLinkInHistory(link))
-                return false
+                const link = articles[i].link
 
-            feed.pushHistory(link)
+                if (!link || feed.isLinkInHistory(link))
+                    return false
+    
+                feed.pushHistory(link)
+    
+                await this.articlePoster.postArticle(guild, feed.channelId, articles[i], feed.roleId)
+            }
 
-            await this.articlePoster.postArticle(guild, feed.channelId, article, feed.roleId)
             return true
         }
         catch (e)
