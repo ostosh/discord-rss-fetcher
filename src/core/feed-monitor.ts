@@ -54,35 +54,32 @@ export default class FeedMonitor
 
     public async fetchAndProcessFeed(guild: Guild, feed: Feed): Promise<boolean>
     {
-        try
-        {
+        let newArticleFound = false
+        try {
             if (!guild.channels.has(feed.channelId))
                 return false
 
             const articles = await this.rssFetcher.fetchArticles(feed.url)
-
             if (articles.length === 0)
                 return false
 
-            // Feed the articles from the earliest to the latest
+            // Feed the new articles in chronological order
             for (var i = articles.length - 1 ; i >= 0; i --) {
-
                 const link = articles[i].link
-
                 if (!link || feed.isLinkInHistory(link))
-                    return false
-    
+                    continue
+
+                newArticleFound = true
                 feed.pushHistory(link)
-    
+
                 await this.articlePoster.postArticle(guild, feed.channelId, articles[i], feed.roleId)
             }
 
-            return true
+            return newArticleFound
         }
-        catch (e)
-        {
+        catch (e) {
             Logger.debugLogError(`Error fetching feed ${feed.url} in guild ${guild.name}`, e)
-            return false
+            return newArticleFound
         }
     }
 
