@@ -54,7 +54,7 @@ export default class FeedMonitor
 
     public async fetchAndProcessFeed(guild: Guild, feed: Feed): Promise<boolean>
     {
-	    let newArticleFound = false
+        let newArticleFound = false
         try {
             if (!guild.channels.has(feed.channelId))
                 return false
