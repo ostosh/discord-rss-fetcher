@@ -5,7 +5,7 @@ import Guild from "./guild"
 
 export default class Feed extends SubDocument implements NotifyPropertyChanged
 {
-    private maxHistoryCount = 200 // TODO replace this with db on disk or hash based cache with proper eviction
+    private maxHistoryCount = 20000 // TODO replace this with db on disk or hash based cache with proper eviction
     private history: string[] = []
 
     public id: string
