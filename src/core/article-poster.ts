@@ -12,14 +12,14 @@ const articleFormattingLong = "\n{{article}}..."
 
 export default class ArticlePoster
 {
-    public async postArticle(guild: Guild | DjsGuild, channelId: string, article: RssArticle)
+    public async postArticle(guild: Guild | DjsGuild, channelId: string, article: RssArticle, contentDisplayOption: string)
     {
         const channel = guild.channels.get(channelId) as TextChannel
-        const messageOptions = this.formatPost(article)
+        const message = contentDisplayOption === "Default" ? this.formatPost(article) : this.formatPostAbbreviated(article)
 
         try
         {
-            await channel.send(messageOptions)
+            await channel.send(message)
         }
         catch (e)
         {
@@ -28,6 +28,28 @@ export default class ArticlePoster
     }
 
     private formatPost(article: RssArticle)
+    {
+        let title = article.title ? `\n**${article.title}**` : ""
+        let link = article.link ? `\n${article.link}` : ""
+
+        let message = title
+
+        if (article.content)
+        {
+            let articleString = HtmlToText.fromString(article.content)
+            const isTooLong = articleString.length > articleContentCharacterLimit
+
+            articleString = isTooLong ? articleString.substr(0, articleContentCharacterLimit) : articleString
+
+            message += (isTooLong ? articleFormattingLong : articleFormattingShort).replace("{{article}}", articleString)
+        }
+
+        message += link.length <= articleLinkCharacterLimit ? link : link.substr(0, articleLinkCharacterLimit)
+
+        return message
+    }
+
+    private formatPostAbbreviated(article: RssArticle)
     {
         let title = article.title ? `\n**${article.title}**` : ""
         let link = article.link ? `\n${article.link}` : ""
