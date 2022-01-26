@@ -5,7 +5,7 @@ import Guild from "./guild"
 
 export default class Feed extends SubDocument implements NotifyPropertyChanged
 {
-    private maxHistoryCount = 10
+    private maxHistoryCount = 20000 // TODO replace this with db on disk or hash based cache with proper eviction
     private history: string[] = []
 
     public id: string
@@ -22,7 +22,10 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
     {
         const newLinks = links.map(x => Normalise.forCache(x)).filter(x => !this.isLinkInHistory(x))
         Array.prototype.push.apply(this.history, newLinks)
-        this.history.splice(0, this.history.length - this.maxHistoryCount)
+        // Keep the latest feeds
+        if (this.history.length > this.maxHistoryCount) {
+            this.history = this.history.slice(-this.maxHistoryCount)  
+        }
         this.onPropertyChanged.dispatch("history")
     }
 
