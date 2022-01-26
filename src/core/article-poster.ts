@@ -1,24 +1,25 @@
-import { Guild as DjsGuild, TextChannel } from "discord.js"
+import { Guild as DjsGuild, TextChannel, MessageOptions } from "discord.js"
 import { Logger } from "disharmony"
 import * as HtmlToText from "html-to-text"
 import Guild from "../models/guild"
 import RssArticle from "../service/rss-reader/abstract/rss-article"
 
-const overallCharacterLimit = 750
+const articleTitleCharacterLimit = 100
+const articleContentCharacterLimit = 250
+const articleLinkCharacterLimit = 750
 const articleFormattingShort = "\n{{article}}"
 const articleFormattingLong = "\n{{article}}..."
-const articleContentCharacterLimit = 250
 
 export default class ArticlePoster
 {
     public async postArticle(guild: Guild | DjsGuild, channelId: string, article: RssArticle, roleId: string)
     {
         const channel = guild.channels.get(channelId) as TextChannel
-        const message = this.formatPost(article)
+        const messageOptions = this.formatPost(article)
 
         try
         {
-            await channel.send((roleId ? `<@&${roleId}>` : "") + message)
+            await channel.send(messageOptions)
         }
         catch (e)
         {
@@ -28,10 +29,12 @@ export default class ArticlePoster
 
     private formatPost(article: RssArticle)
     {
-        const title = article.title ? `\n**${article.title}**` : ""
-        const link = article.link ? `\n${article.link}` : ""
+        let title = article.title ? `\n**${article.title}**` : ""
+        let link = article.link ? `\n${article.link}` : ""
+        let articleStringTruncated = ""
 
-        let message = title
+        const titleTruncated = title.length <= articleTitleCharacterLimit ? title : title.substr(0, articleTitleCharacterLimit) + "..."
+        const linkTruncated = link.length <= articleLinkCharacterLimit ? link : link.substr(0, articleLinkCharacterLimit)
 
         if (article.content)
         {
@@ -40,10 +43,18 @@ export default class ArticlePoster
 
             articleString = isTooLong ? articleString.substr(0, articleContentCharacterLimit) : articleString
 
-            message +=  (isTooLong ? articleFormattingLong : articleFormattingShort).replace("{{article}}", articleString)
+            articleStringTruncated =  (isTooLong ? articleFormattingLong : articleFormattingShort).replace("{{article}}", articleString)
         }
-        message += link.length <= overallCharacterLimit ? link : link.substr(0, overallCharacterLimit)
 
-        return message
+        const messageOptions: MessageOptions = {
+            embed: {
+                title: titleTruncated,
+                description: articleStringTruncated, 
+                color: 0xFFFFFF,
+                url: linkTruncated,
+            },
+        }
+
+        return messageOptions
     }
 }
