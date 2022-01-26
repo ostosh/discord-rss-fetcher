@@ -72,7 +72,7 @@ export default class FeedMonitor
                 newArticleFound = true
                 feed.pushHistory(link)
 
-                await this.articlePoster.postArticle(guild, feed.channelId, articles[i], feed.roleId)
+                await this.articlePoster.postArticle(guild, feed.channelId, articles[i])
             }
 
             return newArticleFound

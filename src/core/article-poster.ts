@@ -12,7 +12,7 @@ const articleFormattingLong = "\n{{article}}..."
 
 export default class ArticlePoster
 {
-    public async postArticle(guild: Guild | DjsGuild, channelId: string, article: RssArticle, roleId: string)
+    public async postArticle(guild: Guild | DjsGuild, channelId: string, article: RssArticle)
     {
         const channel = guild.channels.get(channelId) as TextChannel
         const messageOptions = this.formatPost(article)
