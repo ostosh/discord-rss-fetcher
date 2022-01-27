@@ -3,6 +3,8 @@ import Feed from "../models/feed"
 import Guild from "../models/guild"
 import RssFetcher, { getRssFetcher } from "../service/rss-reader/abstract/rss-fetcher"
 import ArticlePoster from "./article-poster"
+import { delay } from "./../lib/common"
+import { RssConfig } from "./../types/types"
 
 export default class FeedMonitor
 {
@@ -26,6 +28,13 @@ export default class FeedMonitor
 
                 if (didPostNewArticle)
                     await guild.save()
+
+                // Sleep before next iteration
+                let rssFeedTimeoutMs = 30000;
+                if (this.client.config && (this.client.config as RssConfig).rssFeedTimeoutMs) {
+                    rssFeedTimeoutMs = (this.client.config as RssConfig).rssFeedTimeoutMs
+                }
+                await delay(rssFeedTimeoutMs)
             }
 
         // Reaching this code means the above while loop exited, which means the bot disconnected
@@ -45,30 +54,32 @@ export default class FeedMonitor
 
     public async fetchAndProcessFeed(guild: Guild, feed: Feed): Promise<boolean>
     {
-        try
-        {
+        let newArticleFound = false
+        try {
             if (!guild.channels.has(feed.channelId))
                 return false
 
             const articles = await this.rssFetcher.fetchArticles(feed.url)
-
             if (articles.length === 0)
                 return false
 
-            const article = articles[0], link = article.link
+            // Feed the new articles in chronological order
+            for (var i = articles.length - 1 ; i >= 0; i --) {
+                const link = articles[i].link
+                if (!link || feed.isLinkInHistory(link))
+                    continue
 
-            if (!link || feed.isLinkInHistory(link))
-                return false
+                newArticleFound = true
+                feed.pushHistory(link)
 
-            feed.pushHistory(link)
+                await this.articlePoster.postArticle(guild, feed.channelId, articles[i], feed.contentDisplayOption)
+            }
 
-            await this.articlePoster.postArticle(guild, feed.channelId, article, feed.roleId)
-            return true
+            return newArticleFound
         }
-        catch (e)
-        {
+        catch (e) {
             Logger.debugLogError(`Error fetching feed ${feed.url} in guild ${guild.name}`, e)
-            return false
+            return newArticleFound
         }
     }
 

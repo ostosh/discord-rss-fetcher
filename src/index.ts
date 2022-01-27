@@ -9,6 +9,7 @@ import Message from "./models/message"
 import { getRssFetcher } from "./service/rss-reader/abstract/rss-fetcher"
 
 const config = loadConfig()
+config.token = process.env.BOT_TOKEN as string
 
 if (Cluster.isMaster)
 {

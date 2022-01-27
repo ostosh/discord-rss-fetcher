@@ -27,8 +27,13 @@ async function invoke(params: string[], message: Message, client: Client)
     if (feeds.find(x => x.url === url))
         throw new CommandRejection("Feed already exists")
 
+    // Retrieve (optional) content display option (abbr v.s. full)
+    let contentDisplayOption = "Default"
+    if (params.length > 2 && params[3] === "abbr")
+        contentDisplayOption = "Abbreviated"
+
     // Add new feed
-    const newFeed = Feed.create(ShortId.generate(), url, channelId, roleId)
+    const newFeed = Feed.create(ShortId.generate(), url, channelId, roleId, contentDisplayOption)
 
     let prompt = `Are you happy with this? (y/n)\n\`\`\`JSON\n${JSON.stringify(newFeed.toFriendlyObject(message.guild), null, "\t")}\`\`\``
     let userResponse: DisharmonyMessage, commandResponse = ""
@@ -59,8 +64,8 @@ async function invoke(params: string[], message: Message, client: Client)
 }
 
 export default new Command(
-    /*syntax*/          "add-feed <url> <#channel> [@role]",
-    /*description*/     "Add an RSS feed to a channel, with optional role tagging",
+    /*syntax*/          "add-feed <url> <#channel> [@role] <display?=default | abbr>",
+    /*description*/     "Add an RSS feed to a channel, with optional role tagging and two content display options (default or abbreviated)",
     /*permissionLevel*/ PermissionLevel.Admin,
     /*invoke*/          invoke,
 )
