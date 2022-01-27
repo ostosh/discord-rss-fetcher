@@ -1,4 +1,4 @@
-import { Guild as DjsGuild, TextChannel, MessageOptions } from "discord.js"
+import { Guild as DjsGuild, MessageOptions, TextChannel} from "discord.js"
 import { Logger } from "disharmony"
 import * as HtmlToText from "html-to-text"
 import Guild from "../models/guild"
@@ -29,8 +29,8 @@ export default class ArticlePoster
 
     private formatPost(article: RssArticle)
     {
-        let title = article.title ? `\n**${article.title}**` : ""
-        let link = article.link ? `\n${article.link}` : ""
+        const title = article.title ? `\n**${article.title}**` : ""
+        const link = article.link ? `\n${article.link}` : ""
 
         let message = title
 
@@ -51,8 +51,8 @@ export default class ArticlePoster
 
     private formatPostAbbreviated(article: RssArticle)
     {
-        let title = article.title ? `\n**${article.title}**` : ""
-        let link = article.link ? `\n${article.link}` : ""
+        const title = article.title ? `\n**${article.title}**` : ""
+        const link = article.link ? `\n${article.link}` : ""
         let articleStringTruncated = ""
 
         const titleTruncated = title.length <= articleTitleCharacterLimit ? title : title.substr(0, articleTitleCharacterLimit) + "..."
@@ -71,7 +71,7 @@ export default class ArticlePoster
         const messageOptions: MessageOptions = {
             embed: {
                 title: titleTruncated,
-                description: articleStringTruncated, 
+                description: articleStringTruncated,
                 color: 0xFFFFFF,
                 url: linkTruncated,
             },

@@ -2,9 +2,9 @@ import { LiteClient, LiteDisharmonyClient, loadConfig, Logger } from "disharmony
 import Feed from "../models/feed"
 import Guild from "../models/guild"
 import RssFetcher, { getRssFetcher } from "../service/rss-reader/abstract/rss-fetcher"
-import ArticlePoster from "./article-poster"
 import { delay } from "./../lib/common"
 import { RssConfig } from "./../types/types"
+import ArticlePoster from "./article-poster"
 
 export default class FeedMonitor
 {
@@ -30,7 +30,7 @@ export default class FeedMonitor
                     await guild.save()
 
                 // Sleep before next iteration
-                let rssFeedTimeoutMs = 30000;
+                let rssFeedTimeoutMs = 30000
                 if (this.client.config && (this.client.config as RssConfig).rssFeedTimeoutMs) {
                     rssFeedTimeoutMs = (this.client.config as RssConfig).rssFeedTimeoutMs
                 }
@@ -64,7 +64,7 @@ export default class FeedMonitor
                 return false
 
             // Feed the new articles in chronological order
-            for (var i = articles.length - 1 ; i >= 0; i --) {
+            for (let i = articles.length - 1 ; i >= 0; i --) {
                 const link = articles[i].link
                 if (!link || feed.isLinkInHistory(link))
                     continue

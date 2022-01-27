@@ -25,7 +25,7 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
         Array.prototype.push.apply(this.history, newLinks)
         // Keep the latest feeds
         if (this.history.length > this.maxHistoryCount) {
-            this.history = this.history.slice(-this.maxHistoryCount)  
+            this.history = this.history.slice(-this.maxHistoryCount)
         }
         this.onPropertyChanged.dispatch("history")
     }
@@ -38,7 +38,7 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
             channelId: this.channelId,
             roleId: this.roleId,
             history: this.history,
-            contentDisplayOption: this.contentDisplayOption
+            contentDisplayOption: this.contentDisplayOption,
         }
     }
 
@@ -63,7 +63,7 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
             url: this.url,
             channel: channelName,
             role: roleName,
-            contentDisplayOption: this.contentDisplayOption
+            contentDisplayOption: this.contentDisplayOption,
         }
     }
 
