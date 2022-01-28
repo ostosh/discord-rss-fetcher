@@ -16,10 +16,11 @@ export class FeedMonitorTestFixture
     public channelId = "channel-id"
     public roleId = "role-id"
     public articleLink = "article-link"
+    public contentDisplayOption = "Default"
 
     private client: LiteClient
 
-    private mockArcitlePoster: IMock<ArticlePoster>
+    private mockArticlePoster: IMock<ArticlePoster>
     private mockGuild: IMock<Guild>
     private mockFeed: IMock<Feed>
     private mockArticle: IMock<RssArticle>
@@ -32,12 +33,12 @@ export class FeedMonitorTestFixture
         this.mockGuild.setup(x => x.channels).returns(() => new Map([[this.channelId, {} as any]]) as Collection<string, GuildChannel>)
         this.mockGuild.setup(x => x.feeds).returns(() => [this.mockFeed.object])
 
-        this.mockArcitlePoster = Mock.ofType<ArticlePoster>()
+        this.mockArticlePoster = Mock.ofType<ArticlePoster>()
 
         this.mockFeed = Mock.ofType<Feed>()
         this.mockFeed.setup(x => x.url).returns(() => this.feedUrl)
         this.mockFeed.setup(x => x.channelId).returns(() => this.channelId)
-        this.mockFeed.setup(x => x.roleId).returns(() => this.roleId)
+        this.mockFeed.setup(x => x.contentDisplayOption).returns(() => this.contentDisplayOption)
 
         this.mockArticle = Mock.ofType<RssArticle>()
         this.mockArticle.setup(x => x.link).returns(() => this.articleLink)
@@ -61,17 +62,17 @@ export class FeedMonitorTestFixture
         this.mockFeed.setup(x => x.isLinkInHistory(It.isAnyString())).returns(() => false)
 
         // ACT
-        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArcitlePoster.object)
+        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArticlePoster.object)
         const didPostNewArticle = await sut.fetchAndProcessFeed(this.mockGuild.object, this.mockFeed.object)
 
         // ASSERT
         Expect(didPostNewArticle).toBe(true)
 
-        this.mockArcitlePoster.verify(x => x.postArticle(
+        this.mockArticlePoster.verify(x => x.postArticle(
             this.mockGuild.object,
             this.channelId,
             this.mockArticle.object,
-            this.roleId),
+            this.contentDisplayOption),
             Times.once())
     }
 
@@ -82,7 +83,7 @@ export class FeedMonitorTestFixture
         this.mockFeed.setup(x => x.isLinkInHistory(It.isAnyString())).returns(() => false)
 
         // ACT
-        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArcitlePoster.object)
+        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArticlePoster.object)
         await sut.fetchAndProcessFeed(this.mockGuild.object, this.mockFeed.object)
 
         // ASSERT
@@ -96,12 +97,12 @@ export class FeedMonitorTestFixture
         this.mockFeed.setup(x => x.isLinkInHistory(It.isAnyString())).returns(() => true)
 
         // ACT
-        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArcitlePoster.object)
+        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArticlePoster.object)
         const didPostNewArticle = await sut.fetchAndProcessFeed(this.mockGuild.object, this.mockFeed.object)
 
         // ASSERT
         Expect(didPostNewArticle).toBe(false)
-        this.mockArcitlePoster.verify(x =>
+        this.mockArticlePoster.verify(x =>
             x.postArticle(It.isAny(), It.isAny(), It.isAny(), It.isAny()),
             Times.never())
         this.mockFeed.verify(x =>
@@ -117,7 +118,7 @@ export class FeedMonitorTestFixture
         this.mockRssFetcher.setup(x => x.fetchArticles(It.isAnyString())).returns(() => Promise.resolve([]))
 
         // ACT
-        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArcitlePoster.object)
+        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArticlePoster.object)
         const didPostNewArticle = await sut.fetchAndProcessFeed(this.mockGuild.object, this.mockFeed.object)
 
         // ASSERT
@@ -134,12 +135,12 @@ export class FeedMonitorTestFixture
         this.mockFeed.setup(x => x.channelId).returns(() => "non-existent-channel")
 
         // ACT
-        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArcitlePoster.object)
+        const sut = new FeedMonitor(this.client, this.mockRssFetcher.object, this.mockArticlePoster.object)
         const didPostNewArticle = await sut.fetchAndProcessFeed(this.mockGuild.object, this.mockFeed.object)
 
         // ASSERT
         Expect(didPostNewArticle).toBe(false)
-        this.mockArcitlePoster.verify(x =>
+        this.mockArticlePoster.verify(x =>
             x.postArticle(It.isAny(), It.isAny(), It.isAny(), It.isAny()),
             Times.never())
     }

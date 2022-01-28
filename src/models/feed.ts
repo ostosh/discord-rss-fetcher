@@ -5,13 +5,14 @@ import Guild from "./guild"
 
 export default class Feed extends SubDocument implements NotifyPropertyChanged
 {
-    private maxHistoryCount = 10
+    private maxHistoryCount = 20000 // TODO replace this with db on disk or hash based cache with proper eviction
     private history: string[] = []
 
     public id: string
     public url: string
     public channelId: string
     public roleId: string
+    public contentDisplayOption: string
 
     public isLinkInHistory(link: string): boolean
     {
@@ -22,7 +23,10 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
     {
         const newLinks = links.map(x => Normalise.forCache(x)).filter(x => !this.isLinkInHistory(x))
         Array.prototype.push.apply(this.history, newLinks)
-        this.history.splice(0, this.history.length - this.maxHistoryCount)
+        // Keep the latest feeds
+        if (this.history.length > this.maxHistoryCount) {
+            this.history = this.history.slice(-this.maxHistoryCount)
+        }
         this.onPropertyChanged.dispatch("history")
     }
 
@@ -34,6 +38,7 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
             channelId: this.channelId,
             roleId: this.roleId,
             history: this.history,
+            contentDisplayOption: this.contentDisplayOption,
         }
     }
 
@@ -44,6 +49,7 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
         this.channelId = record.channelId
         this.roleId = record.roleId
         this.history = record.history
+        this.contentDisplayOption = record.contentDisplayOption
     }
 
     public toFriendlyObject(guild: Guild)
@@ -57,10 +63,11 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
             url: this.url,
             channel: channelName,
             role: roleName,
+            contentDisplayOption: this.contentDisplayOption,
         }
     }
 
-    public static create(id: string, url: string, channelId: string, roleId?: string): Feed
+    public static create(id: string, url: string, channelId: string, roleId?: string, contentDisplayOption?: string): Feed
     {
         const feed = new Feed()
         feed.id = id
@@ -69,6 +76,9 @@ export default class Feed extends SubDocument implements NotifyPropertyChanged
 
         if (roleId)
             feed.roleId = roleId
+
+        if (contentDisplayOption)
+            feed.contentDisplayOption = contentDisplayOption
 
         return feed
     }
