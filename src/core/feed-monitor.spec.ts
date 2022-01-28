@@ -73,7 +73,7 @@ export class FeedMonitorTestFixture
             this.channelId,
             this.mockArticle.object,
             this.contentDisplayOption),
-            Times.once())  
+            Times.once())
     }
 
     @Test()
