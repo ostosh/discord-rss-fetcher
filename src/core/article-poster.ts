@@ -23,7 +23,7 @@ export default class ArticlePoster
         }
         catch (e)
         {
-            Logger.debugLogError(`Error posting article in channel ${channel.name} in guild ${channel.guild.name}`, e)
+            Logger.debugLogError(`Error posting article in channel ${channel.name} in guild ${channel.guild.name}`, e as undefined)
         }
     }
 

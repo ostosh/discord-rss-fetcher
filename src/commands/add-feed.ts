@@ -64,7 +64,7 @@ async function invoke(params: string[], message: Message, client: Client)
 }
 
 export default new Command(
-    /*syntax*/          "add-feed <url> <#channel> [@role] <display?=default | abbr>",
+    /*syntax*/          "add-feed <url> <#channel> [@role] <display?=default|abbr>",
     /*description*/     "Add an RSS feed to a channel, with optional role tagging and two content display options (default or abbreviated)",
     /*permissionLevel*/ PermissionLevel.Admin,
     /*invoke*/          invoke,
