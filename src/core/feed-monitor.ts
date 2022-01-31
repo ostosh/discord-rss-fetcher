@@ -78,7 +78,7 @@ export default class FeedMonitor
             return newArticleFound
         }
         catch (e) {
-            Logger.debugLogError(`Error fetching feed ${feed.url} in guild ${guild.name}`, e)
+            Logger.debugLogError(`Error fetching feed ${feed.url} in guild ${guild.name}`, e as undefined)
             return newArticleFound
         }
     }
